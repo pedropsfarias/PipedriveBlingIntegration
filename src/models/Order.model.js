@@ -60,3 +60,5 @@ class Order {
     'obs' = ''
     'obs_internas' = ''
 }
+
+module.exports = Order;

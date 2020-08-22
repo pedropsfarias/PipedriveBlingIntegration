@@ -9,7 +9,10 @@ let dealsToOrders = (deals) => {
         const deal = deals[i];
         let order = new Order();
 
-        order.client.name = '';
+        order.cliente.nome = deal.creator;
+        order.itens[0].descricao = deal.title;
+        order.itens[0].codigo = deal.value;
+        order.itens[0].vlr_unit = deal.title;
         
         orders.push(order);
         
@@ -19,4 +22,4 @@ let dealsToOrders = (deals) => {
 
 }
 
-module.exports = DealsToOrders;
+module.exports = dealsToOrders;

@@ -1,8 +1,8 @@
-const Deal = require('./models/Deal.model');
-const PipedriveService = require('./services/Pipedrive.service');
-const BlingService = require('./services/Bling.service');
-const db = require('../middlewares/Database.middleware');
-const dealsToOrders = require('../helpers/dealsToOrders.helper')
+const Deal = require('./../models/Deal.model.js');
+const PipedriveService = require('./../services/Pipedrive.service');
+const BlingService = require('./../services/Bling.service');
+const db = require('./../middlewares/Database.middleware');
+const dealsToOrders = require('./../helpers/dealsToOrders.helper')
 
 class DealControler {
 
@@ -15,7 +15,7 @@ class DealControler {
 
     migrateDeals() {
 
-        migratePromise = new Promise((resolve, reject) => {
+        let migratePromise = new Promise((resolve, reject) => {
 
             this._pipedriveService.getDeals().then(deals => {
 
@@ -44,13 +44,14 @@ class DealControler {
 
     persistDeals(deals) {
 
-        persistPromise = new Promise((resolve, reject) => {
+        let persistPromise = new Promise((resolve, reject) => {
 
             let dealsPromises = [];
 
             for (let i = 0; i < deals.length; i++) {
 
                 let deal = new Deal({
+                    id: deals[i].id,
                     creator: deals[i].creator,
                     title: deals[i].title,
                     value: deals[i].value,
@@ -64,10 +65,43 @@ class DealControler {
             }
 
             Promise.all(dealsPromises)
-            .then(values => resolve(values))
-            .catch(err => reject(err));
+                .then(values => resolve(values))
+                .catch(err => reject(err));
 
         });
+
+        return persistPromise;
+
+    }
+
+    getDeals() {
+
+        let dealsPromisse = new Promise((resolve, reject) => {
+
+            const aggregate = Deal.aggregate([
+                {
+                    _id: { $dayOfYear: "$created_at" },
+                    total: {
+                        '$sum': '$value'
+                    }
+                }
+            ], (err, deals) => {
+
+                if (err) {
+
+                    reject({ success: false });
+
+                } else {
+
+                    resolve(deals);
+
+                }
+
+            });
+
+        });
+
+        return dealsPromisse;
 
     }
 

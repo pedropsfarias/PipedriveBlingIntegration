@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const Deal = mongoose.model('Deal', {
+    id: {
+        type: Number,
+        default: Date.now
+    },
     creator: {
         type: String
     },
