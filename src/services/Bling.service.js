@@ -1,7 +1,6 @@
 const config = require('../config');
 const fetch = require('node-fetch');
-var js2xmlparser = require("js2xmlparser");
-
+const js2xmlparser = require("js2xmlparser");
 
 class BlingService {
 
@@ -18,9 +17,9 @@ class BlingService {
 
     }
 
-    postOrder(pedido) {
+    postOrder(order) {
 
-        let xml = js2xmlparser.parse("pedido", pedido);
+        let xml = js2xmlparser.parse("pedido", order);
         let url = `${this._baseUrl}/pedido/json`;
         let orderPromisse = new Promise((resolve, reject) => {
 
@@ -53,6 +52,30 @@ class BlingService {
         });
 
         return orderPromisse;
+    }
+
+    postOrders(orders){
+
+        let ordersPromisse = new Promise((resolve, reject) => {
+
+            let promises = [];
+
+            for (let i = 0; i < orders.length; i++) {
+                
+                const order = orders[i];
+                promises.push(this.postOrder(order));
+                
+            }
+
+            Promise.all(promises)
+            .then(values => resolve(values))
+            .catch(err => reject(err));
+
+
+        });
+
+        return ordersPromisse;
+        
     }
 }
 
